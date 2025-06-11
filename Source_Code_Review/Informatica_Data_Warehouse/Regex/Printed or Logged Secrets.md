@@ -1,0 +1,4 @@
+Pattern:
+```regex
+\b(?:echo|print|printf|log)\b.*\b(?:passw?(?:o?r?d?)?|tkn|token|secret|secr?|cr(?:ed(?:ent(?:ial)?)?|dntl))\b
+```
