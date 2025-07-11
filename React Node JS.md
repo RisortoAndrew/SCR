@@ -607,30 +607,3 @@ const schema = buildSchema(schemaString);
 // Vulnerable
 graphql(schema, userQuery);
 ```
-
-## Usage Instructions
-
-1. **Search in VS Code**: Use Ctrl+Shift+F (Cmd+Shift+F on Mac) to open global search
-2. **Enable Regex**: Click the regex button (.*) in the search box
-3. **Case Sensitivity**: Consider enabling case-sensitive search for better accuracy
-4. **File Type Filtering**: Use the files to include field with patterns like `*.js,*.jsx,*.ts,*.tsx`
-5. **Exclude Patterns**: Use files to exclude field with `node_modules,build,dist`
-
-## False Positive Mitigation
-
-- Review each match manually
-- Consider context and surrounding code
-- Check for existing security measures
-- Verify if user input is properly sanitized
-- Look for validation frameworks being used
-- Check for security middleware implementations
-
-## Additional Security Checks
-
-- Review package.json for vulnerable dependencies
-- Check for .env files in version control
-- Validate HTTPS usage in production
-- Review cookie security settings
-- Check for proper error handling
-- Validate logging practices
-- Review access control implementations
