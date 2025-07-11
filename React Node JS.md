@@ -1,10 +1,10 @@
-# React Node.js Security Regex Cheat Sheet for VS Code
-
 ## XSS (Cross-Site Scripting) Vulnerabilities
 
 ### 1. Direct innerHTML Usage
 
-**Regex:** `\.innerHTML\s*=\s*(?!['"`])`
+```
+\.innerHTML\s*=\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
@@ -14,7 +14,9 @@ element.innerHTML = req.body.content;
 
 ### 2. Dangerous React Props
 
-**Regex:** `dangerouslySetInnerHTML\s*=\s*\{\{\s*__html:`
+```
+dangerouslySetInnerHTML\s*=\s*\{\{\s*__html:
+```
 
 ```javascript
 // Vulnerable
@@ -23,7 +25,9 @@ element.innerHTML = req.body.content;
 
 ### 3. React createElement with User Input
 
-**Regex:** `React\.createElement\s*\(\s*['"`]script['"`]`
+```
+React\.createElement\s*\(\s*['"`]script['"`]
+```
 
 ```javascript
 // Vulnerable
@@ -32,7 +36,9 @@ React.createElement('script', {src: userInput});
 
 ### 4. Document.write Usage
 
-**Regex:** `document\.write\s*\(`
+```
+document\.write\s*\(
+```
 
 ```javascript
 // Vulnerable
@@ -41,7 +47,9 @@ document.write('<script>' + userInput + '</script>');
 
 ### 5. Eval-like Functions
 
-**Regex:** `\b(?:eval|Function|setTimeout|setInterval)\s*\(\s*(?!['"`])`
+```
+\b(?:eval|Function|setTimeout|setInterval)\s*\(\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
@@ -53,7 +61,9 @@ new Function(userInput)();
 
 ### 6. String Concatenation in Queries
 
-**Regex:** `(?:query|execute)\s*\(\s*['"`][^'"`]*\+`
+```
+(?:query|execute)\s*\(\s*['"`][^'"`]*\+
+```
 
 ```javascript
 // Vulnerable
@@ -62,7 +72,9 @@ db.query('SELECT * FROM users WHERE id = ' + userId);
 
 ### 7. Template Literals in Queries
 
-**Regex:** `(?:query|execute)\s*\(\s*\`[^`]*\$\{`
+```
+(?:query|execute)\s*\(\s*\`[^`]*\$\{
+```
 
 ```javascript
 // Vulnerable
@@ -71,7 +83,9 @@ db.query(`SELECT * FROM users WHERE name = '${userName}'`);
 
 ### 8. Sequelize Raw Queries
 
-**Regex:** `\.query\s*\(\s*['"`][^'"`]*\+|sequelize\.literal\s*\(`
+```
+\.query\s*\(\s*['"`][^'"`]*\+|sequelize\.literal\s*\(
+```
 
 ```javascript
 // Vulnerable
@@ -82,7 +96,9 @@ sequelize.query('SELECT * FROM users WHERE id = ' + req.params.id);
 
 ### 9. MongoDB Query Injection
 
-**Regex:** `\$where\s*:\s*(?!['"`])`
+```
+\$where\s*:\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
@@ -91,7 +107,9 @@ db.collection.find({$where: userInput});
 
 ### 10. Mongoose Query with User Input
 
-**Regex:** `\.find\s*\(\s*req\.(?:body|params|query)`
+```
+\.find\s*\(\s*req\.(?:body|params|query)
+```
 
 ```javascript
 // Vulnerable
@@ -102,7 +120,9 @@ User.find(req.body.query);
 
 ### 11. Child Process with User Input
 
-**Regex:** `(?:exec|spawn|execSync|spawnSync)\s*\(\s*(?!['"`])`
+```
+(?:exec|spawn|execSync|spawnSync)\s*\(\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
@@ -112,7 +132,9 @@ child_process.exec('ls ' + userInput);
 
 ### 12. Shell Command Construction
 
-**Regex:** `['"`][^'"`]*\+.*(?:exec|spawn|system)`
+```
+['"`][^'"`]*\+.*(?:exec|spawn|system)
+```
 
 ```javascript
 // Vulnerable
@@ -123,7 +145,9 @@ exec('ping ' + userInput);
 
 ### 13. File System Operations with User Input
 
-**Regex:** `(?:readFile|writeFile|readdir|stat)\s*\(\s*(?:req\.(?:body|params|query)|.*\+)`
+```
+(?:readFile|writeFile|readdir|stat)\s*\(\s*(?:req\.(?:body|params|query)|.*\+)
+```
 
 ```javascript
 // Vulnerable
@@ -133,7 +157,9 @@ fs.readFile('./uploads/' + fileName);
 
 ### 14. Express Static with User Input
 
-**Regex:** `express\.static\s*\(\s*(?!['"`])`
+```
+express\.static\s*\(\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
@@ -142,7 +168,9 @@ app.use(express.static(userPath));
 
 ### 15. Path Join with User Input
 
-**Regex:** `path\.join\s*\([^)]*req\.(?:body|params|query)`
+```
+path\.join\s*\([^)]*req\.(?:body|params|query)
+```
 
 ```javascript
 // Vulnerable
@@ -153,7 +181,9 @@ path.join(__dirname, req.params.path);
 
 ### 16. Weak JWT Secret
 
-**Regex:** `jwt\.sign\s*\([^)]*,\s*['"`](?:secret|123|test|key)['"`]`
+```
+jwt\.sign\s*\([^)]*,\s*['"`](?:secret|123|test|key)['"`]
+```
 
 ```javascript
 // Vulnerable
@@ -162,7 +192,9 @@ jwt.sign(payload, 'secret');
 
 ### 17. Missing JWT Verification
 
-**Regex:** `jwt\.decode\s*\(`
+```
+jwt\.decode\s*\(
+```
 
 ```javascript
 // Vulnerable - decode doesn't verify signature
@@ -171,7 +203,9 @@ const decoded = jwt.decode(token);
 
 ### 18. Insecure Session Configuration
 
-**Regex:** `session\s*\(\s*\{[^}]*secure\s*:\s*false`
+```
+session\s*\(\s*\{[^}]*secure\s*:\s*false
+```
 
 ```javascript
 // Vulnerable
@@ -183,7 +217,9 @@ app.use(session({
 
 ### 19. Missing CSRF Protection
 
-**Regex:** `app\.use\s*\(\s*csrf\s*\(\s*\)\s*\)`
+```
+app\.use\s*\(\s*csrf\s*\(\s*\)\s*\)
+```
 
 ```javascript
 // Check for missing CSRF - this regex finds proper usage
@@ -194,7 +230,9 @@ app.use(session({
 
 ### 20. Missing Input Validation
 
-**Regex:** `req\.(?:body|params|query)\.[a-zA-Z_$][a-zA-Z0-9_$]*(?!\s*\.\s*(?:trim|toLowerCase|validation))`
+```
+req\.(?:body|params|query)\.[a-zA-Z_$][a-zA-Z0-9_$]*(?!\s*\.\s*(?:trim|toLowerCase|validation))
+```
 
 ```javascript
 // Vulnerable
@@ -203,7 +241,9 @@ const userId = req.params.id; // No validation
 
 ### 21. Weak Regex Validation
 
-**Regex:** `\.match\s*\(\s*\/.*\^\?\|\$\?.*\/`
+```
+\.match\s*\(\s*\/.*\^\?\|\$\?.*\/
+```
 
 ```javascript
 // Vulnerable - missing anchors
@@ -212,7 +252,9 @@ if (input.match(/[a-z]+/)) {
 
 ### 22. Type Coercion Issues
 
-**Regex:** `==\s*(?:true|false|null|undefined|0|1)`
+```
+==\s*(?:true|false|null|undefined|0|1)
+```
 
 ```javascript
 // Vulnerable
@@ -223,7 +265,9 @@ if (userInput == 0) {
 
 ### 23. Unsafe React Refs
 
-**Regex:** `ref\s*=\s*\{[^}]*\.current\s*=`
+```
+ref\s*=\s*\{[^}]*\.current\s*=
+```
 
 ```javascript
 // Vulnerable
@@ -232,7 +276,9 @@ if (userInput == 0) {
 
 ### 24. Event Handler Injection
 
-**Regex:** `on[A-Z][a-zA-Z]*\s*=\s*\{[^}]*userInput`
+```
+on[A-Z][a-zA-Z]*\s*=\s*\{[^}]*userInput
+```
 
 ```javascript
 // Vulnerable
@@ -241,7 +287,9 @@ if (userInput == 0) {
 
 ### 25. Component Prop Injection
 
-**Regex:** `\.\.\.(?:req\.(?:body|params|query)|userInput)`
+```
+\.\.\.(?:req\.(?:body|params|query)|userInput)
+```
 
 ```javascript
 // Vulnerable
@@ -250,7 +298,9 @@ if (userInput == 0) {
 
 ### 26. React Router Vulnerabilities
 
-**Regex:** `<Route\s+path\s*=\s*\{[^}]*req\.`
+```
+<Route\s+path\s*=\s*\{[^}]*req\.
+```
 
 ```javascript
 // Vulnerable
@@ -261,7 +311,9 @@ if (userInput == 0) {
 
 ### 27. Missing Security Headers
 
-**Regex:** `app\.use\s*\(\s*helmet\s*\(\s*\)\s*\)`
+```
+app\.use\s*\(\s*helmet\s*\(\s*\)\s*\)
+```
 
 ```javascript
 // Look for missing helmet usage
@@ -270,7 +322,9 @@ if (userInput == 0) {
 
 ### 28. Insecure CORS Configuration
 
-**Regex:** `cors\s*\(\s*\{[^}]*origin\s*:\s*['"`]*['"`]`
+```
+cors\s*\(\s*\{[^}]*origin\s*:\s*['"`]\*['"`]
+```
 
 ```javascript
 // Vulnerable
@@ -279,7 +333,9 @@ app.use(cors({origin: '*'}));
 
 ### 29. Express Trust Proxy Issues
 
-**Regex:** `app\.set\s*\(\s*['"`]trust proxy['"`]\s*,\s*true\s*\)`
+```
+app\.set\s*\(\s*['"`]trust proxy['"`]\s*,\s*true\s*\)
+```
 
 ```javascript
 // Potentially vulnerable
@@ -288,7 +344,9 @@ app.set('trust proxy', true);
 
 ### 30. Unvalidated Redirects
 
-**Regex:** `res\.redirect\s*\(\s*req\.(?:body|params|query)`
+```
+res\.redirect\s*\(\s*req\.(?:body|params|query)
+```
 
 ```javascript
 // Vulnerable
@@ -299,7 +357,9 @@ res.redirect(req.query.url);
 
 ### 31. Unrestricted File Upload
 
-**Regex:** `multer\s*\(\s*\{[^}]*(?!.*fileFilter)`
+```
+multer\s*\(\s*\{[^}]*(?!.*fileFilter)
+```
 
 ```javascript
 // Vulnerable - no file type validation
@@ -308,7 +368,9 @@ const upload = multer({dest: 'uploads/'});
 
 ### 32. File Type Validation Bypass
 
-**Regex:** `\.mimetype\s*===?\s*['"`][^'"`]*\/\*['"`]`
+```
+\.mimetype\s*===?\s*['"`][^'"`]*\/\*['"`]
+```
 
 ```javascript
 // Vulnerable
@@ -317,7 +379,9 @@ if (file.mimetype === 'image/*') {
 
 ### 33. Unsafe File Paths
 
-**Regex:** `\.originalname\s*\)`
+```
+\.originalname\s*\)
+```
 
 ```javascript
 // Vulnerable
@@ -328,7 +392,9 @@ fs.writeFile(file.originalname, data);
 
 ### 34. Missing Rate Limiting
 
-**Regex:** `app\.(?:get|post|put|delete)\s*\(\s*['"`][^'"`]*['"`]\s*,\s*(?!.*rateLimit)`
+```
+app\.(?:get|post|put|delete)\s*\(\s*['"`][^'"`]*['"`]\s*,\s*(?!.*rateLimit)
+```
 
 ```javascript
 // Vulnerable - no rate limiting
@@ -337,7 +403,9 @@ app.post('/api/login', (req, res) => {
 
 ### 35. Verbose Error Messages
 
-**Regex:** `res\.(?:send|json)\s*\(\s*(?:err|error)`
+```
+res\.(?:send|json)\s*\(\s*(?:err|error)
+```
 
 ```javascript
 // Vulnerable
@@ -346,7 +414,9 @@ res.send(err.stack);
 
 ### 36. Information Disclosure
 
-**Regex:** `res\.(?:send|json)\s*\(\s*process\.env`
+```
+res\.(?:send|json)\s*\(\s*process\.env
+```
 
 ```javascript
 // Vulnerable
@@ -357,7 +427,9 @@ res.json(process.env);
 
 ### 37. MongoDB Connection String Exposure
 
-**Regex:** `mongodb:\/\/[^'"`\s]*:[^'"`\s]*@`
+```
+mongodb:\/\/[^'"`\s]*:[^'"`\s]*@
+```
 
 ```javascript
 // Vulnerable
@@ -366,7 +438,9 @@ const uri = "mongodb://user:pass@localhost/db";
 
 ### 38. Sequelize Logging Sensitive Data
 
-**Regex:** `logging\s*:\s*console\.log`
+```
+logging\s*:\s*console\.log
+```
 
 ```javascript
 // Vulnerable
@@ -377,7 +451,9 @@ const sequelize = new Sequelize('db', 'user', 'pass', {
 
 ### 39. Unsafe Database Queries
 
-**Regex:** `\.raw\s*\(\s*['"`][^'"`]*\+`
+```
+\.raw\s*\(\s*['"`][^'"`]*\+
+```
 
 ```javascript
 // Vulnerable
@@ -388,7 +464,9 @@ knex.raw('SELECT * FROM users WHERE id = ' + userId);
 
 ### 40. Debug Mode in Production
 
-**Regex:** `debug\s*:\s*true`
+```
+debug\s*:\s*true
+```
 
 ```javascript
 // Vulnerable
@@ -397,7 +475,9 @@ app.set('debug', true);
 
 ### 41. Development Dependencies in Production
 
-**Regex:** `require\s*\(\s*['"`](?:nodemon|webpack-dev-server|mocha)['"`]\s*\)`
+```
+require\s*\(\s*['"`](?:nodemon|webpack-dev-server|mocha)['"`]\s*\)
+```
 
 ```javascript
 // Vulnerable
@@ -406,7 +486,9 @@ const nodemon = require('nodemon');
 
 ### 42. Insecure Protocol Usage
 
-**Regex:** `http:\/\/(?!localhost|127\.0\.0\.1)`
+```
+http:\/\/(?!localhost|127\.0\.0\.1)
+```
 
 ```javascript
 // Vulnerable
@@ -417,7 +499,9 @@ const apiUrl = 'http://api.example.com';
 
 ### 43. Weak Hash Algorithms
 
-**Regex:** `createHash\s*\(\s*['"`](?:md5|sha1)['"`]\s*\)`
+```
+createHash\s*\(\s*['"`](?:md5|sha1)['"`]\s*\)
+```
 
 ```javascript
 // Vulnerable
@@ -426,7 +510,9 @@ crypto.createHash('md5').update(password);
 
 ### 44. Static Salt Usage
 
-**Regex:** `\.update\s*\(\s*['"`][^'"`]*['"`]\s*)`
+```
+\.update\s*\(\s*['"`][^'"`]*['"`]\s*\)
+```
 
 ```javascript
 // Vulnerable
@@ -435,7 +521,9 @@ crypto.createHash('sha256').update('staticsalt' + password);
 
 ### 45. Insecure Random Generation
 
-**Regex:** `Math\.random\s*\(\s*\)`
+```
+Math\.random\s*\(\s*\)
+```
 
 ```javascript
 // Vulnerable for security purposes
@@ -446,7 +534,9 @@ const sessionId = Math.random().toString();
 
 ### 46. Unvalidated WebSocket Messages
 
-**Regex:** `\.on\s*\(\s*['"`]message['"`]\s*,\s*(?!.*JSON\.parse)`
+```
+\.on\s*\(\s*['"`]message['"`]\s*,\s*(?!.*JSON\.parse)
+```
 
 ```javascript
 // Vulnerable
@@ -457,7 +547,9 @@ ws.on('message', (data) => {
 
 ### 47. Missing WebSocket Authentication
 
-**Regex:** `new\s+WebSocket\s*\(\s*['"`][^'"`]*['"`]\s*)`
+```
+new\s+WebSocket\s*\(\s*['"`][^'"`]*['"`]\s*\)
+```
 
 ```javascript
 // Check for missing auth in WebSocket connections
@@ -468,7 +560,9 @@ const ws = new WebSocket('ws://localhost:3000');
 
 ### 48. Unsafe useEffect Dependencies
 
-**Regex:** `useEffect\s*\(\s*\(\s*\)\s*=>\s*\{[^}]*eval`
+```
+useEffect\s*\(\s*\(\s*\)\s*=>\s*\{[^}]*eval
+```
 
 ```javascript
 // Vulnerable
@@ -479,7 +573,9 @@ useEffect(() => {
 
 ### 49. State Injection via Props
 
-**Regex:** `useState\s*\(\s*props\.[a-zA-Z_$]`
+```
+useState\s*\(\s*props\.[a-zA-Z_$]
+```
 
 ```javascript
 // Vulnerable
@@ -490,7 +586,9 @@ const [state, setState] = useState(props.userInput);
 
 ### 50. HTTP Requests with User Input
 
-**Regex:** `(?:axios|fetch|request|http\.get)\s*\(\s*(?!['"`])`
+```
+(?:axios|fetch|request|http\.get)\s*\(\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
@@ -499,7 +597,9 @@ axios.get(req.body.url);
 
 ### 51. URL Construction with User Input
 
-**Regex:** `new\s+URL\s*\(\s*(?!['"`])`
+```
+new\s+URL\s*\(\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
@@ -510,7 +610,9 @@ const url = new URL(userInput);
 
 ### 52. Vulnerable Regex Patterns
 
-**Regex:** `new\s+RegExp\s*\(\s*(?!['"`])`
+```
+new\s+RegExp\s*\(\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
@@ -519,7 +621,9 @@ const regex = new RegExp(userInput);
 
 ### 53. Catastrophic Backtracking
 
-**Regex:** `\/.*\(\.\*\+.*\)\+.*\/`
+```
+\/.*\(\.\*\+.*\)\+.*\/
+```
 
 ```javascript
 // Vulnerable
@@ -530,7 +634,9 @@ const regex = /(.*+)+/;
 
 ### 54. Unsafe Package Imports
 
-**Regex:** `require\s*\(\s*req\.(?:body|params|query)`
+```
+require\s*\(\s*req\.(?:body|params|query)
+```
 
 ```javascript
 // Vulnerable
@@ -539,7 +645,9 @@ const module = require(req.body.moduleName);
 
 ### 55. Dynamic Import with User Input
 
-**Regex:** `import\s*\(\s*(?!['"`])`
+```
+import\s*\(\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
@@ -550,7 +658,9 @@ import(userInput);
 
 ### 56. Potential Memory Leaks
 
-**Regex:** `setInterval\s*\([^)]*\)\s*(?!.*clearInterval)`
+```
+setInterval\s*\([^)]*\)\s*(?!.*clearInterval)
+```
 
 ```javascript
 // Vulnerable
@@ -561,7 +671,9 @@ setInterval(() => {
 
 ### 57. Unbounded Array Growth
 
-**Regex:** `\.push\s*\(\s*req\.(?:body|params|query)`
+```
+\.push\s*\(\s*req\.(?:body|params|query)
+```
 
 ```javascript
 // Vulnerable
@@ -572,7 +684,9 @@ globalArray.push(req.body.data);
 
 ### 58. WebView JavaScript Injection
 
-**Regex:** `<WebView[^>]*source=\{\{[^}]*uri:\s*(?!['"`])`
+```
+<WebView[^>]*source=\{\{[^}]*uri:\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
@@ -581,7 +695,9 @@ globalArray.push(req.body.data);
 
 ### 59. AsyncStorage Sensitive Data
 
-**Regex:** `AsyncStorage\.setItem\s*\(\s*['"`][^'"`]*(?:password|token|key)['"`]`
+```
+AsyncStorage\.setItem\s*\(\s*['"`][^'"`]*(?:password|token|key)['"`]
+```
 
 ```javascript
 // Vulnerable
@@ -592,7 +708,9 @@ AsyncStorage.setItem('userPassword', password);
 
 ### 60. GraphQL Query Complexity
 
-**Regex:** `buildSchema\s*\(\s*(?!.*maxDepth)`
+```
+buildSchema\s*\(\s*(?!.*maxDepth)
+```
 
 ```javascript
 // Vulnerable - no query complexity limits
@@ -601,9 +719,115 @@ const schema = buildSchema(schemaString);
 
 ### 61. GraphQL Injection
 
-**Regex:** `graphql\s*\(\s*[^,]*,\s*(?!['"`])`
+```
+graphql\s*\(\s*[^,]*,\s*(?!['"`])
+```
 
 ```javascript
 // Vulnerable
 graphql(schema, userQuery);
+```
+
+## Additional React/Node.js Specific Patterns
+
+### 62. React Context Injection
+
+```
+\.Provider\s*value\s*=\s*\{[^}]*req\.(?:body|params|query)
+```
+
+```javascript
+// Vulnerable
+<AuthContext.Provider value={req.body.user}>
+```
+
+### 63. Next.js getServerSideProps Injection
+
+```
+getServerSideProps[^{]*\{[^}]*req\.(?:body|params|query)
+```
+
+```javascript
+// Vulnerable
+export async function getServerSideProps({req}) {
+  return {props: req.body};
+}
+```
+
+### 64. Express Middleware Bypass
+
+```
+app\.use\s*\(\s*['"`][^'"`]*['"`]\s*,\s*(?!.*auth)
+```
+
+```javascript
+// Vulnerable - route without auth middleware
+app.use('/api/admin', adminRoutes);
+```
+
+### 65. React setState with User Input
+
+```
+setState\s*\(\s*(?:req\.(?:body|params|query)|.*userInput)
+```
+
+```javascript
+// Vulnerable
+this.setState(req.body.state);
+```
+
+### 66. Node.js Process Exit
+
+```
+process\.exit\s*\(\s*(?!0\s*\))
+```
+
+```javascript
+// Vulnerable - potential DoS
+process.exit(req.body.code);
+```
+
+### 67. JWT Token in URL
+
+```
+token\s*=\s*['"`][^'"`]*['"`]\s*\+
+```
+
+```javascript
+// Vulnerable
+const url = `/api/data?token=${jwtToken}`;
+```
+
+### 68. React Component Names from User Input
+
+```
+<\s*\{[^}]*req\.(?:body|params|query)
+```
+
+```javascript
+// Vulnerable
+const ComponentName = req.body.component;
+return <{ComponentName} />;
+```
+
+### 69. Node.js require.resolve with User Input
+
+```
+require\.resolve\s*\(\s*(?!['"`])
+```
+
+```javascript
+// Vulnerable
+const modulePath = require.resolve(userInput);
+```
+
+### 70. React useMemo with User Input
+
+```
+useMemo\s*\(\s*\(\s*\)\s*=>\s*[^,]*req\.(?:body|params|query)
+```
+
+```javascript
+// Vulnerable
+const memoized = useMemo(() => eval(userInput), []);
 ```
